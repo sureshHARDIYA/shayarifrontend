@@ -91,6 +91,7 @@ class ShayariList extends Component {
       })
       .catch(error => {
         this.setState({
+          loading: false,
           error: error
         });
         console.log(error);

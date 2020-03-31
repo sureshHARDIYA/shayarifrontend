@@ -13,9 +13,10 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { setContext } from "apollo-link-context";
 import { AUTH_TOKEN } from "./constants";
 import ScrollToTop from "./components/ScrollToTop";
+import { BASEURL } from "./config";
 
 const httpLink = createHttpLink({
-  uri: "https://eple.hib.no/intromat/graphql"
+  uri: BASEURL
 });
 
 const authLink = setContext((_, { headers }) => {

@@ -89,13 +89,6 @@ class TagList extends Component {
         variables: values
       })
       .then(results => {
-        console.log(
-          results.data.createTag,
-          this.state.rows,
-          Array.isArray(this.state.rows, results.data.createTag),
-          unionBy(this.state.rows, [results.data.createTag], "title")
-        );
-
         this.setState({
           loading: false,
           rows: unionBy(this.state.rows, [results.data.createTag], "title")

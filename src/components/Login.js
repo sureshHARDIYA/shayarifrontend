@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { AUTH_TOKEN } from "../constants";
 import { Layout, Form, Input, Button } from "antd";
+import { LOGINURL } from "../config";
 
 const { Content, Footer } = Layout;
 
@@ -16,7 +17,7 @@ class Logins extends Component {
   };
 
   onFinish = async values => {
-    const log = await fetch("https://eple.hib.no/intromat/login", {
+    const log = await fetch(LOGINURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values)
