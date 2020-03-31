@@ -9,7 +9,6 @@ const FEED_QUERY = gql`
   {
     posts {
       id
-      title
       body
       owner {
         email
@@ -34,11 +33,6 @@ class ShayariList extends Component {
           dataIndex: "id",
           key: "id",
           render: text => <Link to={`/post/${text}`}>{text}</Link>
-        },
-        {
-          title: "title",
-          dataIndex: "title",
-          key: "title"
         },
         {
           title: "body",
