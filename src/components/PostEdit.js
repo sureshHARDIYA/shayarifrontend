@@ -1,75 +1,77 @@
-import React, { Component } from 'react'
-import { Mutation, graphql } from 'react-apollo'
-import gql from 'graphql-tag'
-import { Form, Input, Button } from 'antd';
+import gql from "graphql-tag";
+import React, { Component } from "react";
+import { graphql } from "react-apollo";
+import { Typography, Tag, Card } from "antd";
 
-const POST_MUTATION = gql`
-  mutation PostMutation($title: String!, $body: String!) {
-    addPost(title: $title, body: $body) {
-      id
-      body
-      title
-    }
-  }
-`
+// const POST_MUTATION = gql`
+//   mutation PostMutation($title: String!, $body: String!) {
+//     addPost(title: $title, body: $body) {
+//       id
+//       body
+//       title
+//     }
+//   }
+// `;
 
 const POST_QUERY = gql`
-query getPost($id: ID!){
-    post(id: $id), {
+  query getPost($id: ID!) {
+    post(id: $id) {
+      id
+      body
+      tags {
         id
         title
-        body
-        owner {
-            email
-        }
+      }
+      owner {
+        email
+      }
     }
-}
-`
+  }
+`;
 
+const { Paragraph } = Typography;
 
 class PostEdit extends Component {
-  state = {
-    title: '',
-    body: '',
+  constructor(props) {
+    super(props);
+    this.state = {
+      title: "",
+      body: "",
+      data: this.props.data.post
+    };
   }
 
-  onSubmit = (e) => {
-   e.preventDefault()
-  }
+  onSubmit = e => {
+    e.preventDefault();
+  };
 
   render() {
-
+    const {
+      data: { post }
+    } = this.props;
     return (
-      <div>
-        {console.log(this.props)}
-        <Mutation
-          mutation={POST_MUTATION}
-          onCompleted={() => this.props.history.push('/')}
-        >
-          {(postMutation, { loading, data }) =>
-          <Form onFinish={(values) => {postMutation({variables: values})}} onSubmit={this.onSubmit}>
-              <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-                <Input />
-              </Form.Item>
-              <Form.Item name="body" label="Body" rules={[{ required: true }]}>
-                <Input.TextArea />
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary"  htmlType="submit">
-                  Submit
-                </Button>
-              </Form.Item>
-            </Form>}
-        </Mutation>
-      </div>
-    )
+      <Card style={{ minHeight: 400 }}>
+        {post && post.body && (
+          <Paragraph editable={{ onChange: this.onChange }}>
+            {post.body}
+          </Paragraph>
+        )}
+        {post &&
+          post.tags &&
+          post.tags.map(item => (
+            <Tag color="cyan" key={item.id}>
+              {item.title}
+            </Tag>
+          ))}
+      </Card>
+    );
   }
 }
 
 export default graphql(POST_QUERY, {
- options: ({ match }) => ({
-  variables: {
-   id: match.params.id
-  }
- })
-})(PostEdit)
+  options: ({ match }) => ({
+    variables: {
+      id: match.params.id
+    }
+  })
+})(PostEdit);

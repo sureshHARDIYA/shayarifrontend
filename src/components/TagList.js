@@ -1,9 +1,8 @@
+import gql from "graphql-tag";
+import unionBy from "lodash/unionBy";
 import React, { Component } from "react";
 import { withApollo } from "react-apollo";
-import gql from "graphql-tag";
 import { Table, Popconfirm, Form, Input, Button, message } from "antd";
-import { Link } from "react-router-dom";
-import unionBy from "lodash/unionBy";
 
 import {
   // EditOutlined,
@@ -39,8 +38,7 @@ class TagList extends Component {
         {
           title: "id",
           dataIndex: "id",
-          key: "id",
-          render: text => <Link to={`/post/${text}`}>{text}</Link>
+          key: "id"
         },
         {
           title: "title",

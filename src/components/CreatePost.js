@@ -1,8 +1,10 @@
+import { message } from "antd";
+import gql from "graphql-tag";
+import compose from "lodash/fp/compose";
 import React, { Component } from "react";
 import { graphql, withApollo } from "react-apollo";
-import gql from "graphql-tag";
-import { Form, Input, Button, Select, message } from "antd";
-import compose from "lodash/fp/compose";
+
+import PostForm from "./forms/postForm";
 
 const POST_MUTATION = gql`
   mutation PostMutation($body: String!, $tags: [String]) {
@@ -20,9 +22,10 @@ const FEED_QUERY = gql`
     }
   }
 `;
-const { Option } = Select;
 
 class CreateLink extends Component {
+  formRef = React.createRef();
+
   state = {
     body: ""
   };
@@ -35,7 +38,7 @@ class CreateLink extends Component {
       })
       .then(results => {
         message.success("The shayari was created Succesfully!");
-        this.props.history.push("/");
+        this.props.history.push("/post/new");
       })
       .catch(error => {
         this.setState({
@@ -48,32 +51,7 @@ class CreateLink extends Component {
   render() {
     return (
       <div>
-        <Form onFinish={this.onFinish}>
-          <Form.Item name="body" label="Body" rules={[{ required: true }]}>
-            <Input.TextArea style={{ minHeight: "240px" }} />
-          </Form.Item>
-          <Form.Item
-            name="tags"
-            label="Tags"
-            hasFeedback
-            rules={[{ required: true, message: "Please select your country!" }]}
-          >
-            <Select placeholder="Please select a tags" mode="tags">
-              {Array.isArray(this.props.data.tags) &&
-                this.props.data.tags &&
-                this.props.data.tags.map(item => (
-                  <Option value={item.title} key={item.id}>
-                    {item.title}
-                  </Option>
-                ))}
-            </Select>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
+        <PostForm data={this.props.data} onFinish={this.onFinish} />
       </div>
     );
   }

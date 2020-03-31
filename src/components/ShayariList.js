@@ -1,15 +1,17 @@
+import gql from "graphql-tag";
+import { Link } from "react-router-dom";
 import React, { Component } from "react";
 import { withApollo } from "react-apollo";
-import gql from "graphql-tag";
 import { Table, Tag, Popconfirm, message } from "antd";
-import { Link } from "react-router-dom";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import moment from "moment";
 
 const FEED_QUERY = gql`
   {
     posts {
       id
       body
+      createdAt
       owner {
         email
       }
@@ -43,10 +45,15 @@ class ShayariList extends Component {
           title: "Tags",
           key: "tags",
           dataIndex: "tags",
+          width: 250,
           render: tags => (
             <span>
               {tags.map(tag => {
                 let color = tag.length > 5 ? "geekblue" : "green";
+
+                if (tag.title === "romantic") {
+                  color = "magenta";
+                }
 
                 return (
                   <Tag color={color} key={tag}>
@@ -58,8 +65,15 @@ class ShayariList extends Component {
           )
         },
         {
+          title: "Created At",
+          key: "createdAt",
+          dataIndex: "createdAt",
+          render: record => moment.unix(record).format("MM.DD.YYYY")
+        },
+        {
           title: "Action",
           key: "action",
+          width: 90,
           render: record => (
             <span>
               <Link style={{ marginRight: 16 }} to={record.id}>
