@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { Mutation, withApollo } from "react-apollo";
+import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { Table, Popconfirm, Form, Input, Button, message } from "antd";
 import { Link } from "react-router-dom";
+import unionBy from "lodash/unionBy";
 
 import {
   // EditOutlined,
@@ -81,8 +82,31 @@ class TagList extends Component {
       });
   }
 
-  onSubmit = e => {
-    e.preventDefault();
+  onFinish = values => {
+    this.props.client
+      .mutate({
+        mutation: TAG_MUTATION,
+        variables: values
+      })
+      .then(results => {
+        console.log(
+          results.data.createTag,
+          this.state.rows,
+          Array.isArray(this.state.rows, results.data.createTag),
+          unionBy(this.state.rows, [results.data.createTag], "title")
+        );
+
+        this.setState({
+          loading: false,
+          rows: unionBy(this.state.rows, [results.data.createTag], "title")
+        });
+      })
+      .catch(error => {
+        this.setState({
+          error: error
+        });
+        console.log(error);
+      });
   };
 
   handleDelete = id => {
@@ -116,35 +140,16 @@ class TagList extends Component {
     const { columns, rows, loading } = this.state;
     return (
       <div>
-        <Mutation
-          mutation={TAG_MUTATION}
-          onCompleted={() => {
-            message.success("Tag was created Succesfully!");
-            this.props.history.push("/tag/new");
-          }}
-        >
-          {(tagMutation, { loading, data }) => (
-            <Form
-              onFinish={values => {
-                tagMutation({ variables: values });
-              }}
-              onSubmit={this.onSubmit}
-            >
-              <Form.Item
-                name="title"
-                label="Title"
-                rules={[{ required: true }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  Add Tag
-                </Button>
-              </Form.Item>
-            </Form>
-          )}
-        </Mutation>
+        <Form onFinish={this.onFinish}>
+          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Add Tag
+            </Button>
+          </Form.Item>
+        </Form>
         <Table columns={columns} dataSource={rows} loading={loading} />
       </div>
     );
